@@ -515,6 +515,19 @@
                             ],
                             "default": 1,
                             "description": "Format line between queries"
+                        },
+                        "commaPlacement": {
+                            "type": "string",
+                            "enum": [
+                                "start",
+                                "end"
+                            ],
+                            "enumDescriptions": [
+                                "Use preceding comma",
+                                "Use trailing comma"
+                            ],
+                            "default": "end",
+                            "description": "Use preceding or trailing commas in parameter lists"
                         }
                     }
                 },

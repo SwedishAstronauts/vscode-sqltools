@@ -185,6 +185,9 @@ export default class Formatter {
     this.inlineBlock.beginIfPossible(this.tokens, this.index);
 
     if (!this.inlineBlock.isActive()) {
+      if (this.cfg.commaPlacement === 'start' && this.previousNonWhiteSpace.value === ',') {
+        this.indentation.addIndentForLeadingComma();
+      }
       this.indentation.increaseBlockLevel();
       query = this.addNewline(query);
     }
@@ -199,7 +202,11 @@ export default class Formatter {
       return this.formatWithSpaceAfter(token, query);
     } else {
       this.indentation.decreaseBlockLevel();
-      return this.formatWithSpaces(token, this.addNewline(query));
+      query = this.formatWithSpaces(token, this.addNewline(query));
+      if (this.cfg.commaPlacement === 'start') {
+        this.indentation.removeIndentForLeadingComma();
+      }
+      return query;
     }
   }
 
@@ -208,15 +215,14 @@ export default class Formatter {
   }
 
   // Commas start a new line (unless within inline parentheses or SQL "LIMIT" clause)
+  // If the conffig commaPlacement is set to 'start' then the newline is added before the comma
   formatComma(token: Token, query: string) {
-    query = trimSpacesEnd(query) + token.value + ' ';
-
-    if (this.inlineBlock.isActive()) {
-      return query;
-    } else if (/^LIMIT$/iu.test(this.previousReservedWord.value)) {
-      return query;
+    if (this.inlineBlock.isActive() || /^LIMIT$/iu.test(this.previousReservedWord.value)) {
+      return trimSpacesEnd(query) + token.value + ' ';
+    } else if (this.cfg.commaPlacement === 'start') {
+      return this.addNewline(query) + token.value + ' ';
     } else {
-      return this.addNewline(query);
+      return this.addNewline(trimSpacesEnd(query) + token.value);
     }
   }
 

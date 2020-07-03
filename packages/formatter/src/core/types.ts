@@ -25,6 +25,7 @@ export interface Config {
   reservedWordCase?: 'upper' | 'lower';
   language?: 'sql' | 'db2' | 'n1ql' | 'pl/sql';
   linesBetweenQueries?: number | 'preserve';
+  commaPlacement?: 'start' | 'end';
 }
 export interface TokenizerConfig {
   reservedWords: string[];

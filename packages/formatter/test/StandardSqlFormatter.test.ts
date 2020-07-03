@@ -28,6 +28,21 @@ describe('StandardSqlFormatter', () => {
     );
   });
 
+  it('formats long CREATE TABLE with commaStart', () => {
+    expect(
+      format("CREATE TABLE items (a INT PRIMARY KEY, b TEXT, c INT NOT NULL, d INT NOT NULL);", {
+        commaPlacement: 'start',
+      })
+    ).toBe(
+      "CREATE TABLE items (\n" +
+      "  a INT PRIMARY KEY\n" +
+      "  , b TEXT\n" +
+      "  , c INT NOT NULL\n" +
+      "  , d INT NOT NULL\n" +
+      ");"
+    );
+  });
+
   it('formats INSERT without INTO', () => {
     const result = format(
       "INSERT Customers (ID, MoneyBalance, Address, City) VALUES (12,-123.4, 'Skagen 2111','Stv');"
@@ -302,6 +317,24 @@ describe('StandardSqlFormatter', () => {
     );
   });
 
+  it('formats CASE ... WHEN inside SELECT with commaPlacement at start', () => {
+    const result = format("SELECT foo, bar, CASE baz WHEN 'one' THEN 1 WHEN 'two' THEN 2 ELSE 3 END FROM table", {
+      commaPlacement: 'start',
+    });
+
+    expect(result).toBe(
+      "SELECT foo\n" +
+      "  , bar\n" +
+      "  , CASE\n" +
+      "      baz\n" +
+      "      WHEN 'one' THEN 1\n" +
+      "      WHEN 'two' THEN 2\n" +
+      "      ELSE 3\n" +
+      "    END\n" +
+      "FROM table"
+    );
+  });
+
   it('formats CASE ... WHEN with an expression', () => {
     const result = format(
       "CASE toString(getNumber()) WHEN 'one' THEN 1 WHEN 'two' THEN 2 WHEN 'three' THEN 3 ELSE 4 END;"
@@ -363,6 +396,12 @@ describe('StandardSqlFormatter', () => {
       ",\n" +
       "  b"
     );
+  });
+
+  it('formats line comments followed by comma with comma placement at start', () => {
+    expect(format("SELECT a --comment\n, b", { commaPlacement: 'start' })).toBe(
+      "SELECT a --comment\n" +
+      "  , b");
   });
 
   it('formats line comments followed by close-paren', () => {

@@ -2,6 +2,7 @@ import last from './last';
 
 const INDENT_TYPE_TOP_LEVEL = 'top-level';
 const INDENT_TYPE_BLOCK_LEVEL = 'block-level';
+const INDENT_TYPE_LEADING_COMMA = 'with-comma';
 
 /**
  * Manages indentation levels.
@@ -13,6 +14,7 @@ const INDENT_TYPE_BLOCK_LEVEL = 'block-level';
  */
 export default class Indentation {
   public indentTypes = [];
+  private commaIndent = '  ';
   /**
    * @param {string} indent Indent value, default is "  " (2 spaces)
    */
@@ -25,7 +27,12 @@ export default class Indentation {
    * @return {string}
    */
   getIndent() {
-    return new Array(this.indentTypes.length).fill(this.indent).join('');
+    return this.indentTypes
+      .map(indentType =>
+        (indentType === INDENT_TYPE_LEADING_COMMA
+          ? this.commaIndent
+          : this.indent))
+      .join('');
   }
 
   /**
@@ -63,6 +70,22 @@ export default class Indentation {
       if (type !== INDENT_TYPE_TOP_LEVEL) {
         break;
       }
+    }
+  }
+
+  /**
+   * Decreases indentation for leading comma, if it's the next one
+   */
+  addIndentForLeadingComma() {
+    this.indentTypes.push(INDENT_TYPE_LEADING_COMMA);
+  }
+
+  /**
+   * Decreases indentation for leading comma, if it's the next one
+   */
+  removeIndentForLeadingComma() {
+    if (this.indentTypes[this.indentTypes.length - 1] === INDENT_TYPE_LEADING_COMMA) {
+      this.indentTypes.pop();
     }
   }
 
