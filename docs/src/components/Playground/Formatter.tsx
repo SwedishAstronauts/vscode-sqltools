@@ -44,6 +44,7 @@ class Formatter extends React.Component<{}, Formatter['state']> {
     options: {
       reservedWordCase: 'upper',
       linesBetweenQueries: 2,
+      commaPlacement: 'end',
     } as Config,
     indentType: ' ',
   }
@@ -115,6 +116,13 @@ class Formatter extends React.Component<{}, Formatter['state']> {
         <p>
           <label>Indent size</label>
           <input type="number" value={this.state.indentSize} min='1' onChange={e => this.setState({ indentSize: Number(e.target.value) })}/>
+        </p>
+        <p>
+          <label>Comma Placement</label>
+          <select defaultValue={this.state.options.commaPlacement} onChange={e => this.setState({ options: { ...this.state.options, commaPlacement: e.target.value as any } })}>
+            <option value=" ">After item</option>
+            <option value="start">Before item</option>
+          </select>
         </p>
       </main>
     </OptionsContainer>
